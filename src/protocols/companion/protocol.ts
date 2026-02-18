@@ -205,7 +205,8 @@ export class CompanionProtocol implements CompanionConnectionListener {
 		_frameType: FrameType,
 		opackData: Record<string, unknown>,
 	): void {
-		const messageType = opackData._t as number | undefined;
+		const messageType =
+			opackData._t != null ? Number(opackData._t) : undefined;
 
 		if (messageType === MessageType.Event) {
 			this._listener?.eventReceived(
@@ -213,7 +214,8 @@ export class CompanionProtocol implements CompanionConnectionListener {
 				opackData._c as Record<string, unknown>,
 			);
 		} else if (messageType === MessageType.Response) {
-			const xid = opackData._x as number | undefined;
+			const xid =
+				opackData._x != null ? Number(opackData._x) : undefined;
 			if (xid !== undefined && this._queues.has(xid)) {
 				const sharedData = this._queues.get(xid)!;
 				this._queues.delete(xid);

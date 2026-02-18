@@ -113,9 +113,6 @@ export class CompanionConnection {
 		header[2] = (payloadLength >> 8) & 0xff;
 		header[3] = payloadLength & 0xff;
 
-		console.log("[DEBUG] >> Send frame type=%d, payload=%d bytes, header=%s", frameType, data.length, header.toString("hex"));
-		console.log("[DEBUG] >> OPACK data (first 80 hex): %s", data.toString("hex").slice(0, 80));
-
 		let payload = data;
 		if (this._chacha && data.length > 0) {
 			payload = this._chacha.encrypt(data, undefined, header);
@@ -145,12 +142,9 @@ export class CompanionConnection {
 					payload = this._chacha.decrypt(payload, undefined, header);
 				}
 
-				console.log("[DEBUG] << Recv frame type=%d, payload=%d bytes", header[0], payload.length);
-				console.log("[DEBUG] << OPACK data (first 80 hex): %s", payload.toString("hex").slice(0, 80));
-
 				this._listener?.frameReceived(header[0] as FrameType, payload);
-			} catch (e) {
-				console.log("[DEBUG] << Frame error: %s", e instanceof Error ? e.message : e);
+			} catch {
+				// Failed to handle frame
 			}
 		}
 	}

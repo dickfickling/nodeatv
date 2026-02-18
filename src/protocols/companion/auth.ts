@@ -68,7 +68,6 @@ export class CompanionPairSetupProcedure implements PairSetupProcedure {
 		tlvData.set(TlvMethod, Buffer.from([0x00]));
 		tlvData.set(TlvSeqNo, Buffer.from([0x01]));
 
-		console.log("[DEBUG] M1: Sending PS_Start");
 		const resp = await this.protocol.exchangeAuth(FrameType.PS_Start, {
 			[PAIRING_DATA_KEY]: writeTlv(tlvData),
 			_pwTy: 1,
@@ -77,8 +76,6 @@ export class CompanionPairSetupProcedure implements PairSetupProcedure {
 		const pairingData = getPairingData(resp);
 		this._atvSalt = pairingData.get(TlvSalt) ?? null;
 		this._atvPubKey = pairingData.get(TlvPublicKey) ?? null;
-		console.log("[DEBUG] M2: Received salt (%d bytes): %s", this._atvSalt?.length, this._atvSalt?.toString("hex").slice(0, 32) + "...");
-		console.log("[DEBUG] M2: Received server pubkey (%d bytes): %s...", this._atvPubKey?.length, this._atvPubKey?.toString("hex").slice(0, 32));
 	}
 
 	async finishPairing(
@@ -86,23 +83,17 @@ export class CompanionPairSetupProcedure implements PairSetupProcedure {
 		pinCode: number,
 		displayName?: string | null,
 	): Promise<HapCredentials> {
-		console.log("[DEBUG] M3: PIN code = %d, password = '%s'", pinCode, String(pinCode).padStart(4, "0"));
 		this.srp.step1(pinCode);
 
 		const [pubKey, proof] = this.srp.step2(this._atvPubKey!, this._atvSalt!);
-		console.log("[DEBUG] M3: Client pubkey (%d bytes): %s...", pubKey.length, pubKey.toString("hex").slice(0, 32));
-		console.log("[DEBUG] M3: Client proof (%d bytes): %s", proof.length, proof.toString("hex"));
 
 		const step3Tlv = new Map<number, Buffer>();
 		step3Tlv.set(TlvSeqNo, Buffer.from([0x03]));
 		step3Tlv.set(TlvPublicKey, pubKey);
 		step3Tlv.set(TlvProof, proof);
 
-		const tlvBytes = writeTlv(step3Tlv);
-		console.log("[DEBUG] M3: TLV bytes (%d bytes): %s...%s", tlvBytes.length, tlvBytes.toString("hex").slice(0, 40), tlvBytes.toString("hex").slice(-40));
-
 		const resp = await this.protocol.exchangeAuth(FrameType.PS_Next, {
-			[PAIRING_DATA_KEY]: tlvBytes,
+			[PAIRING_DATA_KEY]: writeTlv(step3Tlv),
 			_pwTy: 1,
 		});
 

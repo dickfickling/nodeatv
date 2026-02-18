@@ -6,6 +6,7 @@ import { logBinary } from "../support/utils.js";
 import type { HapCredentials } from "./hapPairing.js";
 import { HapCredentials as HapCredentialsCtor } from "./hapPairing.js";
 import { readTlv, TlvValue, writeTlv } from "./hapTlv8.js";
+import { pack as opackPack } from "../support/opack.js";
 import { createSRPContext, SRPClientSession } from "./srp.js";
 
 const logger = {
@@ -196,20 +197,22 @@ export class SRPAuthHandler {
 		const controllerInfo = "Pair-Setup-Controller-Sign-Info";
 		const derivedKey = hkdfExpand(controllerSalt, controllerInfo, sessionKey);
 
-		const identifier = name ? Buffer.from(name) : this.pairingId;
-
 		const deviceInfo = Buffer.concat([
 			derivedKey,
-			identifier,
+			this.pairingId,
 			this._authPublic!,
 		]);
 
 		const signature = crypto.sign(null, deviceInfo, this._signingKey!);
 
 		const tlv = new Map<number, Buffer>();
-		tlv.set(TlvValue.Identifier, identifier);
+		tlv.set(TlvValue.Identifier, this.pairingId);
 		tlv.set(TlvValue.PublicKey, this._authPublic!);
 		tlv.set(TlvValue.Signature, signature);
+
+		if (name) {
+			tlv.set(TlvValue.Name, opackPack({ name }));
+		}
 
 		if (additionalData) {
 			for (const [k, v] of additionalData) {
