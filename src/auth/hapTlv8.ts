@@ -74,6 +74,13 @@ export function writeTlv(data: Map<number, Buffer>): Buffer {
 
 	for (const [key, value] of data) {
 		const tag = Buffer.from([key]);
+
+		if (value.length === 0) {
+			parts.push(tag);
+			parts.push(Buffer.from([0]));
+			continue;
+		}
+
 		let remaining = value.length;
 		let pos = 0;
 
