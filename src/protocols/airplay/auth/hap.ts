@@ -72,10 +72,15 @@ export class AirPlayHapPairSetupProcedure implements PairSetupProcedure {
 		data1.set(hapTlv8.TlvValue.SeqNo, Buffer.from([0x03]));
 		data1.set(hapTlv8.TlvValue.PublicKey, pubKey);
 		data1.set(hapTlv8.TlvValue.Proof, proof);
-		await this.http.post("/pair-setup", {
+		const resp1 = await this.http.post("/pair-setup", {
 			body: hapTlv8.writeTlv(data1),
 			headers: AIRPLAY_HEADERS,
 		});
+		const m4Data = getPairingData(resp1);
+		const atvProof = m4Data.get(hapTlv8.TlvValue.Proof);
+		if (atvProof) {
+			this.srp.verifyServerProof(atvProof);
+		}
 
 		const data2 = new Map<number, Buffer>();
 		data2.set(hapTlv8.TlvValue.SeqNo, Buffer.from([0x05]));

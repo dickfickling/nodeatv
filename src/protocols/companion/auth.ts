@@ -97,7 +97,10 @@ export class CompanionPairSetupProcedure implements PairSetupProcedure {
 		});
 
 		const pairingData = getPairingData(resp);
-		const _atvProof = pairingData.get(TlvProof);
+		const atvProof = pairingData.get(TlvProof);
+		if (atvProof) {
+			this.srp.verifyServerProof(atvProof);
+		}
 
 		const encryptedData = this.srp.step3(displayName);
 

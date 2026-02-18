@@ -80,7 +80,11 @@ export class MrpPairSetupProcedure extends PairSetupProcedure {
 
 		const msg3 = messages.cryptoPairing(step3Tlv);
 		const resp3 = await this.protocol.sendAndReceive(msg3, false);
-		_getPairingData(resp3); // Validates server proof response
+		const resp3Data = _getPairingData(resp3);
+		const atvProof = resp3Data.get(TlvValue.Proof);
+		if (atvProof) {
+			this.srp.verifyServerProof(atvProof);
+		}
 
 		const encryptedData = this.srp.step3(displayName);
 

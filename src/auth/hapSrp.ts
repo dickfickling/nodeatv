@@ -178,6 +178,15 @@ export class SRPAuthHandler {
 		];
 	}
 
+	verifyServerProof(serverProof: Buffer): void {
+		if (!this._session) {
+			throw new Error("Must call step1()/step2() before verifyServerProof()");
+		}
+		if (!this._session.verifyProof(serverProof.toString("hex"))) {
+			throw new AuthenticationError("server proof verification failed");
+		}
+	}
+
 	get sharedKey(): string {
 		if (!this._session) {
 			throw new Error("SRP session not established");
