@@ -16,7 +16,7 @@ export class CompanionPairingHandler {
 	private _srp: SRPAuthHandler;
 	private _protocol: CompanionProtocol;
 	private _pairingProcedure: CompanionPairSetupProcedure;
-	private _pinCode: string | null = null;
+	private _pinCode: number | null = null;
 	private _hasPaired = false;
 
 	constructor(core: Core, options?: Record<string, unknown>) {
@@ -47,7 +47,7 @@ export class CompanionPairingHandler {
 	}
 
 	pin(pinCode: number): void {
-		this._pinCode = String(pinCode).padStart(4, "0");
+		this._pinCode = pinCode;
 	}
 
 	async begin(): Promise<void> {
@@ -61,7 +61,7 @@ export class CompanionPairingHandler {
 
 		const credentials = await this._pairingProcedure.finishPairing(
 			"",
-			Number.parseInt(this._pinCode, 10),
+			this._pinCode,
 			this._name,
 		);
 

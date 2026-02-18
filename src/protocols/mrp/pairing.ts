@@ -19,7 +19,7 @@ export class MrpPairingHandler {
 	private _srp: SRPAuthHandler;
 	private _protocol: MrpProtocol;
 	private _pairingProcedure: MrpPairSetupProcedure;
-	private _pinCode: string | null = null;
+	private _pinCode: number | null = null;
 	private _hasPaired = false;
 
 	constructor(core: Core) {
@@ -49,8 +49,8 @@ export class MrpPairingHandler {
 		return true;
 	}
 
-	pin(pin: number | string): void {
-		this._pinCode = String(pin).padStart(4, "0");
+	pin(pin: number): void {
+		this._pinCode = pin;
 	}
 
 	async begin(): Promise<void> {
@@ -65,7 +65,7 @@ export class MrpPairingHandler {
 		const credentials = String(
 			await this._pairingProcedure.finishPairing(
 				"",
-				Number.parseInt(this._pinCode, 10),
+				this._pinCode,
 				null,
 			),
 		);

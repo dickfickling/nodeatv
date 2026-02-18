@@ -23,7 +23,7 @@ function error(msg: string): void {
 
 interface PairingHandler {
 	begin(): Promise<void>;
-	pin(code: number | string): void;
+	pin(code: number): void;
 	finish(): Promise<void>;
 	close(): Promise<void>;
 	get hasPaired(): boolean;
@@ -186,7 +186,7 @@ async function cmdPair(host: string | null): Promise<void> {
 			await handler.begin();
 
 			const pin = await askQuestion("Enter PIN displayed on Apple TV: ");
-			handler.pin(pin);
+			handler.pin(Number.parseInt(pin, 10));
 
 			await handler.finish();
 

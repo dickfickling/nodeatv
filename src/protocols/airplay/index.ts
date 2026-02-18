@@ -356,7 +356,7 @@ function createMrpTunnelData(
  */
 export class AirPlayPairingHandler {
 	private _core: Core;
-	private _pinCode: string | null = null;
+	private _pinCode: number | null = null;
 	private _hasPaired = false;
 	private _connection: HttpConnection | null = null;
 	private _pairingProcedure:
@@ -375,8 +375,8 @@ export class AirPlayPairingHandler {
 		return true;
 	}
 
-	pin(pinCode: number | string): void {
-		this._pinCode = String(pinCode).padStart(4, "0");
+	pin(pinCode: number): void {
+		this._pinCode = pinCode;
 	}
 
 	async begin(): Promise<void> {
@@ -401,7 +401,7 @@ export class AirPlayPairingHandler {
 
 		const credentials = await this._pairingProcedure.finishPairing(
 			"",
-			Number.parseInt(this._pinCode, 10),
+			this._pinCode,
 			null,
 		);
 
