@@ -22,7 +22,6 @@ export async function heartbeater<M>(
 	retries = HEARTBEAT_RETRIES,
 	interval = HEARTBEAT_INTERVAL,
 ): Promise<void> {
-	let _count = 0;
 	let attempts = 0;
 	const message = messageFactory();
 
@@ -40,11 +39,9 @@ export async function heartbeater<M>(
 				failureFunc(ex as Error);
 				return;
 			}
-			_count++;
 			continue;
 		}
 		attempts = 0;
-		_count++;
 	}
 
 	finishFunc();

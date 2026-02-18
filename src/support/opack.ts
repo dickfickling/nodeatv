@@ -1,10 +1,3 @@
-const _SIZED_INT_TYPES = new Map<number, { new (value: number): SizedInt }>();
-
-interface SizedInt {
-	size: number;
-	valueOf(): number;
-}
-
 class SizedIntImpl {
 	private _value: number;
 	size: number;

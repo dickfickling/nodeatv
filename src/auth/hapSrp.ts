@@ -1,5 +1,4 @@
 import * as crypto from "node:crypto";
-import { randomUUID } from "node:crypto";
 import { AuthenticationError } from "../exceptions.js";
 import { Chacha20Cipher8byteNonce } from "../support/chacha20.js";
 import { logBinary } from "../support/utils.js";
@@ -42,7 +41,7 @@ export class SRPAuthHandler {
 	private _session: SRPClientSession | null = null;
 
 	constructor() {
-		this.pairingId = Buffer.from(randomUUID());
+		this.pairingId = Buffer.from(crypto.randomUUID());
 	}
 
 	initialize(): [Buffer, Buffer] {

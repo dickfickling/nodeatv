@@ -21,7 +21,6 @@ import type { CompanionProtocol } from "./protocol.js";
 const PAIRING_DATA_KEY = "_pd";
 
 const TlvMethod = 0x00 as TlvValue;
-const _TlvIdentifier = 0x01 as TlvValue;
 const TlvSalt = 0x02 as TlvValue;
 const TlvPublicKey = 0x03 as TlvValue;
 const TlvProof = 0x04 as TlvValue;

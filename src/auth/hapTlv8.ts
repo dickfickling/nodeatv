@@ -99,9 +99,6 @@ function enumValueName(value: number, enumObj: Record<string, number>): string {
 	return `0x${value.toString(16)}`;
 }
 
-const _tlvValueSet = new Set(
-	Object.values(TlvValue).filter((v) => typeof v === "number"),
-);
 const tlvNameMap = new Map<number, string>();
 for (const [name, value] of Object.entries(TlvValue)) {
 	if (typeof value === "number" && Number.isNaN(Number(name))) {
