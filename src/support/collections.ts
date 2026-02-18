@@ -136,10 +136,15 @@ export class SharedData<T> {
 	}
 
 	async wait(timeout = 5000): Promise<T> {
+		let timer: ReturnType<typeof setTimeout>;
 		const timeoutPromise = new Promise<never>((_, reject) => {
-			setTimeout(() => reject(new Error("SharedData wait timed out")), timeout);
+			timer = setTimeout(() => reject(new Error("SharedData wait timed out")), timeout);
 		});
-		return Promise.race([this._promise, timeoutPromise]);
+		try {
+			return await Promise.race([this._promise, timeoutPromise]);
+		} finally {
+			clearTimeout(timer!);
+		}
 	}
 
 	set(data: T): void {

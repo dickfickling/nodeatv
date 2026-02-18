@@ -336,9 +336,11 @@ export async function multicast(
 	return new Promise<Response[]>((mainResolve) => {
 		let resendInterval: ReturnType<typeof setInterval> | null = null;
 		let timeoutTimer: ReturnType<typeof setTimeout> | null = null;
+		let initTimer: ReturnType<typeof setTimeout> | null = null;
 		let resolved = false;
 
 		function cleanup() {
+			if (initTimer) clearTimeout(initTimer);
 			if (resendInterval) clearInterval(resendInterval);
 			if (timeoutTimer) clearTimeout(timeoutTimer);
 			for (const s of sockets) {
@@ -462,7 +464,8 @@ export async function multicast(
 		}
 
 		// Wait a bit for sockets to bind then start sending
-		setTimeout(() => {
+		initTimer = setTimeout(() => {
+			if (resolved) return;
 			sendQueries();
 			resendInterval = setInterval(sendQueries, 1000);
 		}, 50);
