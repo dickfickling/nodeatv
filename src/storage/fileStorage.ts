@@ -28,9 +28,17 @@ export class FileStorage extends AbstractStorage {
 		if (!existsSync(this._filename)) return;
 
 		const content = await readFile(this._filename, "utf-8");
-		const rawData = JSON.parse(content);
-		this.storageModel = rawData;
-		this.updateHash(rawData);
+		let rawData: unknown;
+		try {
+			rawData = JSON.parse(content);
+		} catch {
+			return;
+		}
+		if (typeof rawData !== "object" || rawData === null) {
+			return;
+		}
+		this.storageModel = rawData as typeof this.storageModel;
+		this.updateHash(rawData as Record<string, unknown>);
 	}
 
 	toString(): string {
