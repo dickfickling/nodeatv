@@ -1,0 +1,6 @@
+pyatv
+node_modules
+dist
+tags
+.yarn
+.pnp.*
